@@ -1,5 +1,5 @@
+from tkinter import Label, Button, Entry, PhotoImage, LEFT, RIGHT, GROOVE, END, Tk
 from os import environ
-from tkinter import *
 from tkinter import messagebox
 from cryptocode import decrypt
 
@@ -24,18 +24,24 @@ class Login:
         self.ventana.config(bg='#263238')
 
         ### Imagen
-        self.user = PhotoImage(file='img/user.png')
+        self.imagen_usuario = PhotoImage(file='img/user.png')
 
         self.txt_imagen = Label(
             self.ventana,
-            image=self.user, 
+            image=self.imagen_usuario, 
             width=100, height=100
         )
         self.txt_imagen.pack(pady=20)
 
-        ### Cuadro uno
+        ### Cuadros
         self.cuadro_uno = Label(self.ventana, bg='#263238')
         self.cuadro_uno.pack(padx=10, pady=10)
+
+        self.cuadro_dos = Label(self.ventana, bg='#263238')
+        self.cuadro_dos.pack(padx=10, pady=10)
+
+        self.cuadro_tres = Label(self.ventana, bg='#263238')
+        self.cuadro_tres.pack(padx=10, pady=10)
 
         self.txt_nombre = Label(
             self.cuadro_uno, text='  Nombre  ',
@@ -51,9 +57,6 @@ class Login:
         self.entrada_nombre.focus()
         self.entrada_nombre.pack(side=LEFT)
 
-        ### Cuadro dos
-        self.cuadro_dos = Label(self.ventana, bg='#263238')
-        self.cuadro_dos.pack(padx=10, pady=10)
 
         self.txt_contrasenia = Label(
             self.cuadro_dos, text='Contraseña',
@@ -74,10 +77,6 @@ class Login:
             bg='#263238', fg='lavender'
         )
         self.txt_mensaje.pack(pady=10)
-
-        ### Cuadro tres
-        self.cuadro_tres = Label(self.ventana, bg='#263238')
-        self.cuadro_tres.pack(padx=10, pady=10)
 
         self.btn_ingresar = Button(
             self.cuadro_tres, text='Ingresar',
@@ -126,7 +125,7 @@ class Login:
                     continue
             
             if estado:     
-                messagebox.showinfo(title='Felicidades', message='Acceso consedido')
+                messagebox.showinfo(title='Felicidades', message='Acceso concedido')
                 self.ventana.destroy()
 
                 vista = Tk()

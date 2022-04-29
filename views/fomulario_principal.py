@@ -1,9 +1,7 @@
-from tkinter import *
+from tkinter import Label, Entry, Button, GROOVE, Frame
 from tkinter import ttk
 
 ### Formularios
-from views.formulario_pedido import FormularioPedido
-from views.formulario_proveedor import FormularioProveedor
 from views.formulario_empleado import FormularioEmpleado
 from views.formulario_paciente import FormularioPaciente
 from views.formulario_historial import FormularioHistorial
@@ -13,8 +11,8 @@ class FormularioPrincipal:
     def __init__(self, ventana, id_empleado):
         self.ventana = ventana
         self.ventana.title('clínica'.title())
-        self.ventana.geometry('1000x600+300+100')
-        self.ventana.minsize(width=1000, height=600)
+        self.ventana.geometry('1000x700+300+50')
+        self.ventana.minsize(width=1000, height=700)
         self.ventana.iconbitmap('img/logo.ico')
 
         #Titulo
@@ -32,6 +30,8 @@ class FormularioPrincipal:
         self.vistas = ttk.Notebook(ventana)
         self.vistas.pack()
 
+        
+
         ### Vista principal
         self.vista_principal = Frame(self.vistas, height=500, width=900)
         self.vistas.add(
@@ -39,16 +39,6 @@ class FormularioPrincipal:
             text='historial clínico'.title(),
         )
         FormularioHistorial(ventana=self.vista_principal)
-
-
-        ### Vista proveedor
-        self.vista_proveedor = Frame(self.vistas, height=500, width=900)
-        self.vistas.add(
-            self.vista_proveedor,
-            text='proveedor'.title()
-        )
-
-        FormularioProveedor(ventana=self.vista_proveedor)
 
         ### Vista empleado
         self.vista_empleado = Frame(self.vistas, height=500, width=900)
@@ -58,15 +48,6 @@ class FormularioPrincipal:
         )
         
         FormularioEmpleado(ventana=self.vista_empleado)
-
-        ### Vista pedido
-        self.vista_pedido = Frame(self.vistas, height=500, width=900)
-        self.vistas.add(
-            self.vista_pedido,
-            text='pedido'.title()
-        )
-
-        FormularioPedido(ventana=self.vista_pedido, id_empleado=id_empleado)
 
         ### Vista paciente
 

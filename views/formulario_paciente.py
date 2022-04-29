@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Label, LabelFrame, Entry, Button, LEFT ,END, CENTER, IntVar, Toplevel, StringVar
 from tkinter import ttk
 from tkinter.ttk import Treeview
 from tkcalendar import Calendar

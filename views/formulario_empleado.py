@@ -1,7 +1,7 @@
-from tkinter import *
-from tkinter import ttk, messagebox
+from tkinter import Label, LabelFrame, Entry, Button, END, LEFT, CENTER, StringVar, Toplevel
+from tkinter import ttk
 from models.entidad_empleado import Empleado
-from cryptocode import encrypt
+from cryptocode import encrypt, decrypt
 from os import environ
 
 
@@ -143,14 +143,6 @@ class FormularioEmpleado:
         self.cuadro_cinco = Label(self.cuadro_principal)
         self.cuadro_cinco.pack(pady=10, padx=10)
 
-        #Botones
-        self.btn_borrar = Button(
-            self.cuadro_cinco,
-            text='Borrar',  bg='crimson', fg='white',
-            font=('consolas', 10, 'bold'), padx=20, pady=5,
-            command=self.eliminar_empleado
-        )
-        self.btn_borrar.pack(side=LEFT, padx=10)
 
         self.btn_editar = Button(
             self.cuadro_cinco,
@@ -168,14 +160,28 @@ class FormularioEmpleado:
         )
         self.btn_guardar.pack(side=LEFT, padx=10)
 
+        self.btn_buscar = Button(
+            self.cuadro_cinco,
+            text='Buscar',  bg='#43a047', fg='white',
+            font=('consolas', 10, 'bold'), padx=20, pady=5,
+            command=self.leer_empleado
+        )
+        self.btn_buscar.pack(side=LEFT)
+        ### cuadro de busqueda
+        self.entrada_buscar_empleado = Entry(
+            self.cuadro_principal, font=('consolas', 12, 'bold'),
+            width=40, fg='green', bd=5
+        )
+        self.entrada_buscar_empleado.pack()
+
         ### tabla empleado
         self.tabla_empleado = ttk.Treeview(
             self.cuadro_principal,height=10, columns=(0,1,2,3)
         )
 
-        self.tabla_empleado.heading('#0', text='Nombre y Apellido')
-        self.tabla_empleado.heading('#1', text='Tipo')
-        self.tabla_empleado.heading('#2', text='Celular')
+        self.tabla_empleado.heading('#0', text='Nombre')
+        self.tabla_empleado.heading('#1', text='Apellido')
+        self.tabla_empleado.heading('#2', text='Tipo')
         self.tabla_empleado.heading('#3', text='DNI')
         self.tabla_empleado.heading('#4', text='Estado')
 
@@ -194,12 +200,22 @@ class FormularioEmpleado:
 
         for elemento in self.tabla_empleado.get_children():
             self.tabla_empleado.delete(elemento)
-        
+        ## validamos si la fila es verdadero o falso segun sea activo por el usuario
         for fila in empleado.obtener_empleado():
             if fila[6]:
-                self.tabla_empleado.insert('',0,text=fila[1]+' '+fila[2], values=(fila[3],fila[4],fila[5],'Activo',fila[7]), tags=fila[0])
+                self.tabla_empleado.insert('',0,text=fila[1], values=(fila[2],fila[3],fila[5],'Activo',fila[7], fila[4]), tags=fila[0])
             else:
-                self.tabla_empleado.insert('',0,text=fila[1]+' '+fila[2], values=(fila[3],fila[4],fila[5],'Inactivo',fila[7]), tags=fila[0])
+                self.tabla_empleado.insert('',0,text=fila[1], values=(fila[2],fila[3],fila[5],'Inactivo',fila[7], fila[4]), tags=fila[0])
+    
+    def leer_empleado(self):
+        for elemento in self.tabla_empleado.get_children():
+            self.tabla_empleado.delete(elemento)
+        
+        for fila in empleado.leer_empleado(informacion=dict(ILIKE = '%'+self.entrada_buscar_empleado.get()+'%')):
+            if fila[6]:
+                self.tabla_empleado.insert('',0,text=fila[1], values=(fila[2],fila[3],fila[5],'Activo',fila[7], fila[4]), tags=fila[0])
+            else:
+                self.tabla_empleado.insert('',0,text=fila[1], values=(fila[2],fila[3],fila[5],'Inactivo',fila[7], fila[4]), tags=fila[0])
 
 
     def registrar_empleado(self):
@@ -234,68 +250,50 @@ class FormularioEmpleado:
         else:
             self.txt_mensaje.config(text='Se requieren Datos', fg='crimson')
     
-    def eliminar_empleado(self):
-        
-        try:
-            id_empleado = self.tabla_empleado.item(self.tabla_empleado.selection())['tags'][0]
-            nombre = self.tabla_empleado.item(self.tabla_empleado.selection())['text']
 
-            confirmar = messagebox.askretrycancel(title='Alterta',message='Estas seguro de eliminar?')
-
-            if confirmar:
-                empleado.remover_empleado(id_empleado=id_empleado)
-                self.txt_mensaje.config(text='Empleado {0} eliminado'.format(nombre), fg='red')
-                self.buscar_empleado()
-            else:
-                self.txt_mensaje.config(text='No eliminado', fg='limegreen')
-
-        except IndexError:
-            self.txt_mensaje.config(text='Selecciona un empleado', fg='red')
     
     def editar_empleado(self):
         
         try:
             id_empleado = self.tabla_empleado.item(self.tabla_empleado.selection())['tags'][0]
             nombre = self.tabla_empleado.item(self.tabla_empleado.selection())['text']
-            tipo = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][0]
-            celular = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][1]
+            apellido = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][0]
+            celular = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][5]
             dni = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][2]
-            estado = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][3]
             contrasenia = self.tabla_empleado.item(self.tabla_empleado.selection())['values'][4]
+
+            ### Contraseña desencriptada
+            contrasenia_txt = decrypt(contrasenia, environ.get('pgsecret'))
 
 
             self.formulario_editar = Toplevel()
             self.formulario_editar.iconbitmap('img/logo.ico')
-            self.formulario_editar.geometry('500x500')
-
-            self.datos_viejos = Label(
-                self.formulario_editar,
-                text='Nombre: {0}\n Tipo: {1}\n Celular: {2}\n DNI: {3}\n Estado: {4}'.format(nombre,tipo,celular,dni,estado),
-                font=('consolas',12,'bold'), 
-                fg='darkgoldenrod'
-            )
-            self.datos_viejos.pack(pady=10)
+            self.formulario_editar.geometry('500x300')
 
             self.cuadro_1 = Label(self.formulario_editar)
             self.cuadro_1.pack()
+            self.cuadro_2 = Label(self.formulario_editar)
+            self.cuadro_2.pack()
+            self.cuadro_3 = Label(self.formulario_editar)
+            self.cuadro_3.pack()
+            self.cuadro_5 = Label(self.formulario_editar)
+            self.cuadro_5.pack()
+            
 
             self.nombre_txt = Label(self.cuadro_1, text='Nombre: ')
             self.nombre_txt.pack(side=LEFT)
-            self.nombre = Entry(self.cuadro_1)
+            self.nombre = Entry(self.cuadro_1, textvariable=StringVar(self.cuadro_1, value=nombre))
             self.nombre.pack(side=LEFT)
             self.nombre.focus()
 
             self.apellido_txt = Label(self.cuadro_1, text='Apellido: ')
             self.apellido_txt.pack(side=LEFT)
-            self.apellido = Entry(self.cuadro_1)
+            self.apellido = Entry(self.cuadro_1, textvariable=StringVar(self.cuadro_1, value=apellido))
             self.apellido.pack(side=LEFT)
-
-            self.cuadro_2 = Label(self.formulario_editar)
-            self.cuadro_2.pack()
 
             self.celular_txt = Label(self.cuadro_2, text='Celular: ')
             self.celular_txt.pack(side=LEFT)
-            self.celular = Entry(self.cuadro_2)
+            self.celular = Entry(self.cuadro_2, textvariable=StringVar(self.cuadro_2, value=celular))
             self.celular.pack(side=LEFT)
 
             self.tipo_txt = Label(self.cuadro_2, text='Tipo: ')
@@ -304,12 +302,9 @@ class FormularioEmpleado:
             self.tipo.current(0)
             self.tipo.pack(side=LEFT)
 
-            self.cuadro_3 = Label(self.formulario_editar)
-            self.cuadro_3.pack()
-
             self.dni_txt = Label(self.cuadro_3, text='DNI: ')
             self.dni_txt.pack(side=LEFT)
-            self.dni = Entry(self.cuadro_3)
+            self.dni = Entry(self.cuadro_3, textvariable=StringVar(self.cuadro_3, value=dni))
             self.dni.pack(side=LEFT)
 
             self.estado_txt = Label(self.cuadro_3, text='Estado: ')
@@ -318,13 +313,10 @@ class FormularioEmpleado:
             self.estado.current(0)
             self.estado.pack(side=LEFT)
 
-            self.cuadro_5 = Label(self.formulario_editar)
-            self.cuadro_5.pack()
-
             self.contrasenia_txt = Label(self.cuadro_5, text='Contraseña')
             self.contrasenia_txt.pack(side=LEFT)
 
-            self.contrasenia = Entry(self.cuadro_5,show='■')
+            self.contrasenia = Entry(self.cuadro_5, show='■', textvariable=StringVar(self.cuadro_5, contrasenia_txt))
             self.contrasenia.pack(side=LEFT)
 
             ## Boton Editar
@@ -349,11 +341,13 @@ class FormularioEmpleado:
 
         empleado =  Empleado(nombre=nombre, 
         apellido=apellido, tipo=tipo, celular=celular,
-        dni=dni,estado=nuevo_estado, contrasenia=contrasenia)
+        dni=dni,estado=nuevo_estado, 
+        contrasenia=encrypt(contrasenia,environ.get('pgsecret'))
+        )
 
         empleado.actualizar_empleado(empleado=empleado, id_empleado=id_empleado)
         
         self.formulario_editar.destroy()
-        self.txt_mensaje.config(text='Empleado {0} editado'.format(empleado.nombre), fg='royalblue')
+        self.txt_mensaje.config(text='Empleado {0} editado con éxito'.format(empleado.nombre), fg='royalblue')
         self.buscar_empleado()
         

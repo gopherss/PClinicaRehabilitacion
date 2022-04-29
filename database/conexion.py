@@ -17,6 +17,13 @@ def obtener_datos(consulta: str, valores: tuple):
             datos = mi_cursor.fetchall()
             return datos
 
+def leer_datos(consulta: str, valores: dict):
+    with cadena_conexion:
+        with cadena_conexion.cursor() as mi_cursor:
+            mi_cursor.execute(consulta, valores)
+            datos = mi_cursor.fetchall()
+            return datos
+
 
 def crud_datos(consulta: str, valores: tuple):
     with cadena_conexion:

@@ -14,6 +14,11 @@ class Diagnostico:
         mi_consulta = consulta.CONSULTAS_DIAGNOSTICO['buscar_historial']
         historial = conexion.obtener_datos(consulta=mi_consulta, valores=())
         return historial
+    
+    def buscar_historial(self, informacion):
+        mi_consulta = consulta.CONSULTAS_DIAGNOSTICO['leer_historial']
+        historial = conexion.leer_datos(consulta=mi_consulta, valores=informacion)
+        return historial
 
     def nuevo_diagnostico(self, mi_objeto, id_paciente):
         mi_consulta_uno = consulta.CONSULTAS_DIAGNOSTICO['registrar_diagnostico']

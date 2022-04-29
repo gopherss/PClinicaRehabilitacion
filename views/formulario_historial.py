@@ -1,7 +1,6 @@
-from tkinter import *
+from tkinter import Label, LabelFrame, Entry, LEFT, Button, GROOVE, END, Toplevel
 from tkinter.scrolledtext import ScrolledText
 from tkinter.ttk import Treeview
-from matplotlib import image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen.canvas import Canvas
 from os import getlogin, mkdir
@@ -26,9 +25,17 @@ class FormularioHistorial:
         )
         self.cuadro_principal.pack()
 
-        ### Cuadro Uno
+        ### Cuadros
         self.cuadro_uno = Label(self.cuadro_principal)
         self.cuadro_uno.pack()
+
+        self.cuadro_dos = Label(self.cuadro_principal)
+        self.cuadro_dos.pack()
+
+        self.cuadro_botones = Label(self.cuadro_principal)
+        self.cuadro_botones.pack()
+
+
 
         self.tabla_pacientes = Treeview(
             self.cuadro_uno, height=5, columns=(0,)
@@ -45,13 +52,11 @@ class FormularioHistorial:
 
         self.btn_buscar_paciente = Button(
             self.cuadro_uno, font=('consolas', 12, 'bold'),
-            width=10, bd=3, text='Buscar', bg='deepskyblue', fg='white'
+            width=10, bd=3, text='Buscar', bg='deepskyblue', fg='white',
+            command=self.leer_paciente
         )
         self.btn_buscar_paciente.pack(side=LEFT)
 
-        ### Cuadro Dos
-        self.cuadro_dos = Label(self.cuadro_principal)
-        self.cuadro_dos.pack()
 
         self.txt_diagnostico = Label(
             self.cuadro_dos, font=('arial', 10, 'bold'),
@@ -77,9 +82,6 @@ class FormularioHistorial:
         )
         self.entrada_tratamiento.pack(side=LEFT, pady=10)
 
-        ### Cuadro botones
-        self.cuadro_botones = Label(self.cuadro_principal)
-        self.cuadro_botones.pack()
 
         self.btn_editar = Button(
             self.cuadro_botones, text='Editar', font=('arial', 10, 'bold'),
@@ -95,12 +97,13 @@ class FormularioHistorial:
         )
         self.btn_guardar.pack(side=LEFT, padx=10)
 
-        self.btn_buscar = Button(
+        self.btn_buscar_historial = Button(
             self.cuadro_botones,
             text='Buscar', bg='seagreen', fg='white',
-            font=('arila', 10, 'bold'), padx=20, pady=5
+            font=('arila', 10, 'bold'), padx=20, pady=5,
+            command=self.leer_historial
         )
-        self.btn_buscar.pack(side=LEFT, padx=10)
+        self.btn_buscar_historial.pack(side=LEFT, padx=10)
 
         self.btn_imprimir = Button(
             self.cuadro_botones, 
@@ -114,6 +117,12 @@ class FormularioHistorial:
             self.cuadro_principal, font=('arial', 12, 'bold')
         )
         self.txt_mensaje.pack(pady=10)
+
+        self.entrada_buscar_historial = Entry(
+            self.cuadro_principal, font=('consolas', 12, 'bold'),
+            width=40, fg='green', bd=5
+        )
+        self.entrada_buscar_historial.pack(pady=10)
 
         self.tabla_historial = Treeview(
             self.cuadro_principal, height=5, columns=(0, 1, 2)
@@ -136,6 +145,16 @@ class FormularioHistorial:
             self.tabla_pacientes.insert(
                 '', 0, text=fila[1]+','+fila[2], values=(fila[5], fila[0]))
     
+    def leer_paciente(self):
+
+        for e in self.tabla_pacientes.get_children():
+            self.tabla_pacientes.delete(e)
+
+        for fila in paciente.buscar_paciente(informacion=dict(ILIKE='%'+self.entrada_buscar_paciente.get()+'%')):
+            self.tabla_pacientes.insert(
+                '', 0, text=fila[1]+','+fila[2], values=(fila[5], fila[0])
+            )
+    
     def mostrar_historial(self):
         for elemento in self.tabla_historial.get_children():
             self.tabla_historial.delete(elemento)
@@ -145,6 +164,18 @@ class FormularioHistorial:
                 '', 0, text=fila[0]+' '+fila[1], 
                 values=(fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[9], fila[10]), 
                 tags=fila[8])
+    
+    def leer_historial(self):
+        
+        for e in self.tabla_historial.get_children():
+            self.tabla_historial.delete(e)
+        
+        for fila in diagnostico.buscar_historial(informacion=dict(ILIKE='%'+self.entrada_buscar_historial.get()+'%')):
+            self.tabla_historial.insert(
+                '',0, text=fila[0]+' '+fila[1],
+               values=(fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[9], fila[10]), 
+               tags=fila[8]
+            )
 
     def validar(self):
         return len(self.entrada_diagnostico.get(1.0, END)) > 1 and \
@@ -302,13 +333,52 @@ class FormularioHistorial:
 
             titulo = 'Clinica de Rehabilitación'
 
+            
+            d_palabras = str('')
+            diagnostico_palabras = datos[3].split(' ')
+            
+            for i in range(0,len( diagnostico_palabras)):
+                if i == 15:
+                    d_palabras +=' '+diagnostico_palabras[i]+' \n'
+                if i == 25:
+                    d_palabras +=' '+diagnostico_palabras[i]+' \n'
+                if i == 35:
+                    d_palabras +=' '+diagnostico_palabras[i]+' \n'
+                if i == 45:
+                    d_palabras +=' '+diagnostico_palabras[i]+' \n'
+                if i == 55:
+                    d_palabras +=' '+diagnostico_palabras[i]+' \n'
+                if i == 65:
+                    d_palabras +=' '+diagnostico_palabras[i]+' \n'
+                else:
+                    d_palabras +=' '+diagnostico_palabras[i]
+
             diagnostico_texto = '''
             Diagnostico:\n{0}
-            '''.format(datos[3])
+            '''.format(d_palabras)
+
+            t_palabras = str('')
+            tratamiento_palabras = datos[4].split(' ')
+            
+            for i in range(0,len(tratamiento_palabras)):
+                if i == 15:
+                    t_palabras +=' '+tratamiento_palabras[i]+' \n'
+                if i == 25:
+                    t_palabras +=' '+tratamiento_palabras[i]+' \n'
+                if i == 35:
+                    t_palabras +=' '+tratamiento_palabras[i]+' \n'
+                if i == 45:
+                    t_palabras +=' '+tratamiento_palabras[i]+' \n'
+                if i == 55:
+                    t_palabras +=' '+tratamiento_palabras[i]+' \n'
+                if i == 65:
+                    t_palabras +=' '+tratamiento_palabras[i]+' \n'
+                else:
+                    t_palabras +=' '+tratamiento_palabras[i]
 
             tratamiento_texto = '''
             Tratamiento:\n{0}
-            '''.format(datos[4])
+            '''.format(t_palabras)
 
             reporte = Canvas(filename=ruta_pdf, pagesize=A4)
 

@@ -27,6 +27,11 @@ class Paciente:
         mi_consulta = consulta.CONSULTAS_PACIENTE['buscar_paciente']
         pacientes = conexion.obtener_datos(consulta=mi_consulta, valores=())
         return pacientes
+    
+    def buscar_paciente(self, informacion):
+        mi_consulta = consulta.CONSULTAS_PACIENTE['leer_paciente']
+        pacientes = conexion.leer_datos(consulta=mi_consulta, valores=informacion)
+        return pacientes
 
     def nuevo_paciente(self, paciente, id_empleado):
         mi_consulta = consulta.CONSULTAS_PACIENTE['registrar_paciente']
