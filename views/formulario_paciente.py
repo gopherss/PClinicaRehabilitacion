@@ -165,9 +165,16 @@ class FormularioPaciente:
         self.btn_buscar = Button(
             self.cuadro_botones,
             text='Buscar', bg='seagreen', fg='white',
-            font=('arila', 10, 'bold'), padx=20, pady=5
+            font=('arila', 10, 'bold'), padx=20, pady=5,
+            command=self.leer_paciente
         )
         self.btn_buscar.pack(side=LEFT, padx=10)
+
+        self.entrada_buscar_paciente = Entry(
+            self.cuadro_principal, font=('consolas', 12, 'bold'),
+            width=40, fg='green', bd=5
+        )
+        self.entrada_buscar_paciente.pack()
 
         ### Tabla de pacientes
         self.tabla_paciente = Treeview(
@@ -202,8 +209,18 @@ class FormularioPaciente:
 
         ### llenar datos
         for fila in paciente.obtener_paciente():
-            self.tabla_paciente.insert('', 0, text=fila[1]+', '+fila[2], values=(fila[3],fila[5],fila[6],fila[7],fila[8]), tags=fila[0])
-    
+            self.tabla_paciente.insert('', 0, text=fila[1]+', '+fila[2], values=(
+                fila[3], fila[5], fila[6], fila[7], fila[8]), tags=fila[0])
+
+    def leer_paciente(self):
+
+        for e in self.tabla_paciente.get_children():
+            self.tabla_paciente.delete(e)
+
+        for fila in paciente.buscar_paciente(informacion=dict(ILIKE='%'+self.entrada_buscar_paciente.get()+'%')):
+            self.tabla_paciente.insert('', 0, text=fila[1]+', '+fila[2], values=(
+                fila[3], fila[5], fila[6], fila[7], fila[8]), tags=fila[0])
+
     def registrar_paciente(self):
 
         if self.validar():
@@ -245,12 +262,25 @@ class FormularioPaciente:
 
             self.formulario_editar = Toplevel()
             self.formulario_editar.title('Editar Paciente')
-            self.formulario_editar.geometry('600x400')
+            self.formulario_editar.geometry('600x200')
             self.formulario_editar.iconbitmap('img/logo.ico')
 
             ### Entradas
             self.cuadro_1 = Label(self.formulario_editar)
             self.cuadro_1.pack()
+            
+            self.cuadro_2 = Label(self.formulario_editar)
+            self.cuadro_2.pack()
+
+            self.cuadro_3 = Label(self.formulario_editar)
+            self.cuadro_3.pack()
+
+            self.cuadro_4 = Label(self.formulario_editar)
+            self.cuadro_4.pack()
+
+            self.cuadro_5 = Label(self.formulario_editar)
+            self.cuadro_5.pack()
+
             self.nombre_txt = Label(self.cuadro_1, text='Nombre', font=('arial',10,'bold'))
             self.nombre_txt.pack(side=LEFT)
 
@@ -269,19 +299,16 @@ class FormularioPaciente:
             )
             self.nuevo_apellido.pack(side=LEFT)
 
-            self.celular_txt = Label(self.cuadro_1, text='Celular', font=('arial',10,'bold'))
+            self.celular_txt = Label(self.cuadro_2, text='Celular', font=('arial',10,'bold'))
             self.celular_txt.pack(side=LEFT)
 
             self.nuevo_celular = Entry(
-                self.cuadro_1, font=('arial',10,'bold'),
-                textvariable=StringVar(self.cuadro_1, value=celular)
+                self.cuadro_2, font=('arial',10,'bold'),
+                textvariable=StringVar(self.cuadro_2, value=celular)
             )
             self.nuevo_celular.pack(side=LEFT)
 
-            ### Cuadro Dos
-            self.cuadro_2 = Label(self.formulario_editar)
-            self.cuadro_2.pack()
-
+       
             self.genero_txt = Label(self.cuadro_2, text='Genero', font=('arial',10,'bold'))
             self.genero_txt.pack(side=LEFT)
             self.nuevo_genero = ttk.Combobox(
@@ -291,40 +318,40 @@ class FormularioPaciente:
             self.nuevo_genero.current(0)
             self.nuevo_genero.pack(side=LEFT)
 
-            self.dni_txt = Label(self.cuadro_2, text='DNI', font=('arial',10,'bold'))
+
+            self.dni_txt = Label(self.cuadro_3, text='DNI', font=('arial',10,'bold'))
             self.dni_txt.pack(side=LEFT)
             self.nuevo_dni = Entry(
-                self.cuadro_2, font=('arial',10,'bold'), width=14,
+                self.cuadro_3, font=('arial',10,'bold'), width=14,
                 textvariable=StringVar(self.cuadro_2, value=dni)
             )
             self.nuevo_dni.pack(side=LEFT)
 
-            self.peso_txt = Label(self.cuadro_2, text='Peso', font=('arial',10,'bold'))
+            self.peso_txt = Label(self.cuadro_3, text='Peso', font=('arial',10,'bold'))
             self.peso_txt.pack(side=LEFT)
             self.nuevo_peso = Entry(
-                self.cuadro_2, font=('arial',10,'bold'), width=12,
-                textvariable=StringVar(self.cuadro_2, value=peso)
+                self.cuadro_3, font=('arial',10,'bold'), width=12,
+                textvariable=StringVar(self.cuadro_3, value=peso)
             )
             self.nuevo_peso.pack(side=LEFT)
 
-            self.talla_txt = Label(self.cuadro_2, text='Talla', font=('arial',10,'bold'))
+            self.talla_txt = Label(self.cuadro_4, text='Talla', font=('arial',10,'bold'))
             self.talla_txt.pack(side=LEFT)
             self.nuevo_talla = Entry(
-                self.cuadro_2, font=('arial',10,'bold'), width=12,
-                textvariable=StringVar(self.cuadro_2, value=talla)
+                self.cuadro_4, font=('arial',10,'bold'), width=12,
+                textvariable=StringVar(self.cuadro_4, value=talla)
             )
             self.nuevo_talla.pack(side=LEFT)
 
-            self.cuadro_3 = Label(self.formulario_editar)
-            self.cuadro_3.pack()
 
-            self.fecha_txt = Label(self.cuadro_3, text='Fecha', font=('arial',10,'bold'))
+            self.fecha_txt = Label(self.cuadro_4, text='Fecha', font=('arial',10,'bold'))
             self.fecha_txt.pack(side=LEFT)
             self.nuevo_fecha = Entry(
-                self.cuadro_3, font=('arial',10,'bold'), width=12,
-                textvariable=StringVar(self.cuadro_3, value=fecha)
+                self.cuadro_4, font=('arial',10,'bold'), width=12,
+                textvariable=StringVar(self.cuadro_4, value=fecha)
             )
             self.nuevo_fecha.pack(side=LEFT)
+     
 
             ### Boton Actualizar
             self.btn_actualizar = Button(
@@ -346,14 +373,14 @@ class FormularioPaciente:
         except IndexError:
             self.txt_mensaje.config(text='Selecciona un Dato', fg='crimson')
     
-    def actualizar(self,nombre,apellido,celular,genero,dni,peso,talla,fecha,id_paciente):
+    def actualizar(self, nombre, apellido, celular, genero, dni, peso, talla, fecha, id_paciente):
         paciente = Paciente(nombre=nombre, apellido=apellido, celular=celular,
-                    genero=genero, dni=dni, peso=peso, talla=talla, fecha_nacimiento=fecha)
-        
-        paciente.actualizar_paciente(paciente=paciente,id_paciente=id_paciente,id_empleado=self.codigo)
+                            genero=genero, dni=dni, peso=peso, talla=talla, fecha_nacimiento=fecha)
+
+        paciente.actualizar_paciente(
+            paciente=paciente, id_paciente=id_paciente, id_empleado=self.codigo)
 
         self.formulario_editar.destroy()
-        self.txt_mensaje.config(text='Paciente Actualizado...',fg='limegreen')
+        self.txt_mensaje.config(text='Paciente {} Actualizado...'.format(paciente.nombre), fg='limegreen')
 
         self.buscar_paciente()
-

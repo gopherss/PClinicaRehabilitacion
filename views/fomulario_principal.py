@@ -1,4 +1,4 @@
-from tkinter import Label, Entry, Button, GROOVE, Frame
+from tkinter import Label, GROOVE, Frame
 from tkinter import ttk
 
 ### Formularios
@@ -8,7 +8,7 @@ from views.formulario_historial import FormularioHistorial
 
 class FormularioPrincipal:
 
-    def __init__(self, ventana, id_empleado):
+    def __init__(self, ventana, id_empleado, tipo):
         self.ventana = ventana
         self.ventana.title('clínica'.title())
         self.ventana.geometry('1000x700+300+50')
@@ -49,6 +49,13 @@ class FormularioPrincipal:
         
         FormularioEmpleado(ventana=self.vista_empleado)
 
+        print(tipo)
+
+        if tipo == 'Administrador':
+            pass
+        else:
+            self.vistas.hide(1)
+
         ### Vista paciente
 
         self.vista_paciente = Frame(self.vistas, height=500, width=900)
@@ -58,3 +65,6 @@ class FormularioPrincipal:
         )
 
         FormularioPaciente(ventana=self.vista_paciente, id_empleado=id_empleado)
+
+
+       

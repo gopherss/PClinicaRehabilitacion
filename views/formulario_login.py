@@ -107,17 +107,19 @@ class Login:
 
     def loguear(self):
         if self.validar_datos():
-            nombre = self.entrada_nombre.get()
+            nombre = self.entrada_nombre.get().lower()
             password = self.entrada_contrasenia.get()
 
             estado = bool() 
             codigo = str()
+            tipo_empleado = str()
             
 
             for empleados in empleado.obtener_empleado():
 
                 if nombre == empleados[1] and password == decrypt(empleados[7],environ.get('pgsecret')) and empleados[6] == True:
                     estado = True
+                    tipo_empleado = empleados[3]
                     codigo = empleados[0]
                     break
                 else:
@@ -129,7 +131,7 @@ class Login:
                 self.ventana.destroy()
 
                 vista = Tk()
-                FormularioPrincipal(ventana=vista, id_empleado=codigo)
+                FormularioPrincipal(ventana=vista, id_empleado=codigo, tipo=tipo_empleado)
                 vista.mainloop()
             else:
                 self.txt_mensaje.config(text='Acceso denegado')

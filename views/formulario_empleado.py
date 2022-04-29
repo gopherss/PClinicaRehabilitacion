@@ -226,7 +226,7 @@ class FormularioEmpleado:
             else:
                 estado = False
             empleado = Empleado(
-                nombre=self.entrada_nombre.get(),
+                nombre=self.entrada_nombre.get().lower(),
                 apellido=self.entrada_apellido.get(),
                 tipo=self.combo_tipo.get(),
                 celular=self.entrada_celular.get(),
@@ -268,7 +268,7 @@ class FormularioEmpleado:
 
             self.formulario_editar = Toplevel()
             self.formulario_editar.iconbitmap('img/logo.ico')
-            self.formulario_editar.geometry('500x300')
+            self.formulario_editar.geometry('500x200')
 
             self.cuadro_1 = Label(self.formulario_editar)
             self.cuadro_1.pack()
