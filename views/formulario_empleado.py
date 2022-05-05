@@ -298,7 +298,10 @@ class FormularioEmpleado:
 
             self.tipo_txt = Label(self.cuadro_2, text='Tipo: ')
             self.tipo_txt.pack(side=LEFT)
-            self.tipo = ttk.Combobox(self.cuadro_2, values=('Administrador','Empleado'), state='readonly')
+            if nombre.lower() == 'jeiner':
+                self.tipo = ttk.Combobox(self.cuadro_2, values=('Administrador','Empleado'), state='disable')
+            else:
+                self.tipo = ttk.Combobox(self.cuadro_2, values=('Administrador','Empleado'), state='readonly')
             self.tipo.current(0)
             self.tipo.pack(side=LEFT)
 
@@ -309,7 +312,10 @@ class FormularioEmpleado:
 
             self.estado_txt = Label(self.cuadro_3, text='Estado: ')
             self.estado_txt.pack(side=LEFT)
-            self.estado = ttk.Combobox(self.cuadro_3, values=('Activo', 'Inactivo'), state='readonly')
+            if nombre.lower() == 'jeiner':
+                self.estado = ttk.Combobox(self.cuadro_3, values=('Activo', 'Inactivo'), state='disable')
+            else:
+                self.estado = ttk.Combobox(self.cuadro_3, values=('Activo', 'Inactivo'), state='readonly')
             self.estado.current(0)
             self.estado.pack(side=LEFT)
 

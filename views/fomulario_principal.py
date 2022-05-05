@@ -49,8 +49,6 @@ class FormularioPrincipal:
         
         FormularioEmpleado(ventana=self.vista_empleado)
 
-        print(tipo)
-
         if tipo == 'Administrador':
             pass
         else:
